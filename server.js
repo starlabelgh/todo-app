@@ -5,23 +5,15 @@ let MongoClient = require('mongodb').MongoClient
 let app = express()
 let db
 
+app.use(express.static('public'))
+
 let connectionString = 'mongodb+srv://starlabel:admin_123@cluster0.vzz5k.mongodb.net/TodoApp?retryWrites=true&w=majority'
 MongoClient.connect(connectionString, {useNewUrlParser: true}, function(err, client){
     db = client.db()
     app.listen(3000)
 })
 
-// let MongoClient = require('mongodb').MongoClient
-// MongoClient.connect('mongodb+srv://starlabel:admin_123@cluster0.vzz5k.mongodb.net/TodoApp?retryWrites=true&w=majority', function(err, client){
-//   if(err) throw err
-//   //let db = client.db()
-//   db.collection('items').find().toArray(function(err, result){
-//     db = client.db()
-//     app.listen(3000)
-//     })
-//  })
-
-
+app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
 app.get('/', function(req,res){
@@ -52,7 +44,7 @@ app.get('/', function(req,res){
                 return `<li class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">
                 <span class="item-text">${item.text}</span>
                 <div>
-                  <button class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
+                  <button data-id="${item._id}" class="edit-me btn btn-secondary btn-sm mr-1">Edit</button>
                   <button class="delete-me btn btn-danger btn-sm">Delete</button>
                 </div>
               </li>`
@@ -60,7 +52,8 @@ app.get('/', function(req,res){
             </ul>
             
           </div>
-          
+          <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+          <script src="/browser.js"></script>
         </body>
         </html>`)
     })
@@ -71,4 +64,10 @@ app.post('/create-item', function(req,res){
     db.collection('items').insertOne({text: req.body.item}, function(){
         res.redirect('/')
     }) 
+})
+
+app.post('/update-item', function(req, res){
+    db.collection('items').findOneAndUpdate({_id: new mongodb.ObjectId(req.body.id)}, {$set: {text: req.body.text}}, function(){
+        res.send("Success")
+    })
 })
