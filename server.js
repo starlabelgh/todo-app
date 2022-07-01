@@ -22,17 +22,17 @@ MongoClient.connect(connectionString, {useNewUrlParser: true}, function(err, cli
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
-function passwordProtected(req, res, next){
-    res.set('WWWW-Authenticate', 'Basic realm="Simple Todo App"')
-    console.log(req.headers.authorization)
-    if(req.headers.authorization == "Placeholder"){
-        next()
-    }else{
-        res.status(401).send("Authentication Required")
-    }
-}
+// function passwordProtected(req, res, next){
+//     res.set('WWWW-Authenticate', 'Basic realm="Simple Todo App"')
+//     console.log(req.headers.authorization)
+//     if(req.headers.authorization == "Basic bGVhcm46amF2YXNjcmlwdA=="){
+//         next()
+//     }else{
+//         res.status(401).send("Authentication Required")
+//     }
+// }
 
-app.use(passwordProtected)
+// app.use(passwordProtected)
 
 app.get('/', function(req,res){
     db.collection('items').find().toArray(function(err, items){
